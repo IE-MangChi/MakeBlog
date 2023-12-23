@@ -3,7 +3,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.blog.api.repository.PostMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        insert into item (title, content)
+        insert into Post (title, content)
         values (#{title}, #{content})
     </insert>
+    <select id="findById" resultType="com.blog.api.domain.Post">
+        select id, title, content
+        from Post
+        where id = #{id}
+    </select>
 </mapper>

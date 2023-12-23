@@ -3,9 +3,11 @@ package com.blog.api.controller;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import com.blog.api.domain.Post;
 import com.blog.api.repository.PostRepository;
 import com.blog.api.request.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -53,13 +56,19 @@ class PostControllerTest {
                 .build();
         String requestJson = objectMapper.writeValueAsString(request);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andReturn();
 
         // DB값 검증 로직
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        long postId = Long.parseLong(contentAsString);
+        Post post = postRepository.findById(postId);
+        Assertions.assertThat(post.getTitle()).isEqualTo("제목입니다.");
+        Assertions.assertThat(post.getContent()).isEqualTo("내용입니다.");
     }
 }

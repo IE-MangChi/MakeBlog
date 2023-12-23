@@ -12,9 +12,13 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    public void write(PostCreate postCreate) {
+    public Long write(PostCreate postCreate) {
         Post post = new Post(postCreate.getTitle(), postCreate.getContent());
-        postRepository.save(post);
+        return postRepository.save(post);
+    }
+
+    public Post findById(Long postId) {
+        return postRepository.findById(postId);
     }
 
 }

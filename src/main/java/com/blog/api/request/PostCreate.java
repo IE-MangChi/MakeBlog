@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-@Getter
 @Setter
+@Getter
 @ToString
 public class PostCreate {
 
@@ -15,6 +15,9 @@ public class PostCreate {
     private String title;
     @NotBlank(message = "내용을 입력해주세요.")
     private String content;
+
+    public PostCreate() {
+    }
 
     @Builder
     public PostCreate(String title, String content) {
