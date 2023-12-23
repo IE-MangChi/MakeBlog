@@ -4,6 +4,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import com.blog.api.repository.PostRepository;
+import com.blog.api.request.PostCreate;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ class PostControllerTest {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     // 이런 테스트는 Get요청에 맞는듯
     @Test
     @DisplayName("/posts 요청시 title값은 필수다")
@@ -42,9 +47,15 @@ class PostControllerTest {
     @Test
     @DisplayName("/posts 요청시 DB에 값이 저장")
     void postResultOnDBTest() throws Exception {
+        PostCreate request = PostCreate.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .build();
+        String requestJson = objectMapper.writeValueAsString(request);
+
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": \"제목입니다\", \"content\": \"내용입니다.\"}")
+                        .content(requestJson)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
