@@ -1,8 +1,10 @@
 package com.blog.api.service;
 
+import com.blog.api.domain.Page;
 import com.blog.api.request.PostCreate;
 import com.blog.api.domain.Post;
 import com.blog.api.repository.PostRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,12 @@ public class PostService {
 
     public Post findById(Long postId) {
         return postRepository.findById(postId);
+    }
+
+    public List<Post> findAll(int pageNum, int boardSize) {
+        int count = postRepository.count();
+        Page page = new Page(pageNum, count, boardSize);
+        return postRepository.findAll(page.getOffset(), boardSize);
     }
 
 }

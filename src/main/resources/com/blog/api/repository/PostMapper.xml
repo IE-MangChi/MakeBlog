@@ -11,4 +11,14 @@
         from Post
         where id = #{id}
     </select>
+    <select id="count" resultType="int">
+        select count(*)
+        from Post
+    </select>
+    <select id="findAll" resultType="com.blog.api.domain.Post">
+    select id, title, content
+    from Post
+    order by id
+    limit #{offset}, #{boardSize}
+    </select>
 </mapper>

@@ -8,6 +8,7 @@ import com.blog.api.repository.PostRepository;
 import com.blog.api.request.PostCreate;
 import com.blog.api.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.stream.IntStream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -92,6 +93,25 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.id").value(postId))
                 .andExpect(jsonPath("$.title").value("제목22"))
                 .andExpect(jsonPath("$.content").value("내용22"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 1페이지 조회")
+    void boardPageOneTest() throws Exception {
+        IntStream.range(1, 29)
+                .forEach(i -> {
+                    Post post = Post.builder()
+                            .title("제목" + i)
+                            .content("내용" + i)
+                            .build();
+                    postRepository.save(post);
+                });
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts?pageNum=1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }
 }

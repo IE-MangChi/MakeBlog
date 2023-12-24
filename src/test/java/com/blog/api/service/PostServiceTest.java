@@ -7,6 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.blog.api.domain.Post;
 import com.blog.api.repository.PostRepository;
 import com.blog.api.request.PostCreate;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,5 +47,24 @@ class PostServiceTest {
         Post post = postService.findById(postId);
         Assertions.assertThat(post.getTitle()).isEqualTo("제목");
         Assertions.assertThat(post.getContent()).isEqualTo("내용");
+    }
+
+    @Test
+    @DisplayName("글 1페이지 조회")
+    void boardPageOneTest() {
+        IntStream.range(1, 30)
+                .forEach(i -> {
+                    Post post = Post.builder()
+                            .title("제목" + i)
+                            .content("내용" + i)
+                            .build();
+                    postRepository.save(post);
+                });
+
+        List<Post> posts = postService.findAll(1, 5);
+        System.out.println(posts.get(0).getTitle());
+        Assertions.assertThat(posts.size()).isEqualTo(5);
+        Assertions.assertThat(posts.get(0).getId()).isEqualTo(1);
+        Assertions.assertThat(posts.get(4).getId()).isEqualTo(5);
     }
 }
