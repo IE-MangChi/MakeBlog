@@ -45,23 +45,4 @@ class PostServiceTest {
         Assertions.assertThat(post.getTitle()).isEqualTo("제목");
         Assertions.assertThat(post.getContent()).isEqualTo("내용");
     }
-
-    @Test
-    @DisplayName("글 1개 조회")
-    void boardGetApiTest() throws Exception {
-        PostCreate postCreate = PostCreate.builder()
-                .title("제목22")
-                .content("내용22")
-                .build();
-        Long postId = postService.write(postCreate);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts/{postId}", postId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$.id").value(postId))
-                .andExpect(jsonPath("$.title").value("제목22"))
-                .andExpect(jsonPath("$.content").value("내용22"))
-                .andDo(print());
-    }
 }

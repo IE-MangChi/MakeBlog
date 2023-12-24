@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.blog.api.domain.Post;
 import com.blog.api.repository.PostRepository;
 import com.blog.api.request.PostCreate;
+import com.blog.api.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +29,9 @@ class PostControllerTest {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private PostService postService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -70,5 +74,24 @@ class PostControllerTest {
         Post post = postRepository.findById(postId);
         Assertions.assertThat(post.getTitle()).isEqualTo("제목입니다.");
         Assertions.assertThat(post.getContent()).isEqualTo("내용입니다.");
+    }
+
+    @Test
+    @DisplayName("글 1개 조회")
+    void boardGetApiTest() throws Exception {
+        PostCreate postCreate = PostCreate.builder()
+                .title("제목22")
+                .content("내용22")
+                .build();
+        Long postId = postService.write(postCreate);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/{postId}", postId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.id").value(postId))
+                .andExpect(jsonPath("$.title").value("제목22"))
+                .andExpect(jsonPath("$.content").value("내용22"))
+                .andDo(print());
     }
 }
