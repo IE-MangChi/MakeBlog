@@ -21,4 +21,10 @@
     order by id
     limit #{offset}, #{boardSize}
     </select>
+    <update id="update">
+        update Post
+        set title=#{postEdit.title},
+            content=#{postEdit.content}
+            where id = #{id}
+    </update>
 </mapper>

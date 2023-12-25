@@ -1,6 +1,7 @@
 package com.blog.api.repository;
 
 import com.blog.api.domain.Post;
+import com.blog.api.request.PostEdit;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +17,8 @@ public class PostRepository {
         return postMapper.save(post);
     }
 
-    public Post findById(Long postId) {
-        return postMapper.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+    public Optional<Post> findById(Long postId) {
+        return postMapper.findById(postId);
     }
 
     public int count() {
@@ -27,6 +27,10 @@ public class PostRepository {
 
     public List<Post> findAll(int offset, int boardSize) {
         return postMapper.findAll(offset, boardSize);
+    }
+
+    public void edit(Long postId, PostEdit postEdit) {
+        postMapper.update(postId, postEdit);
     }
 
 }

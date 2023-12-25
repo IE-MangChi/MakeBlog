@@ -3,6 +3,7 @@ package com.blog.api.service;
 import com.blog.api.domain.Post;
 import com.blog.api.repository.PostRepository;
 import com.blog.api.request.PostCreate;
+import com.blog.api.request.PostEdit;
 import com.blog.api.request.PostSearch;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -64,5 +65,25 @@ class PostServiceTest {
         Assertions.assertThat(posts.size()).isEqualTo(5);
         Assertions.assertThat(posts.get(0).getId()).isEqualTo(1);
         Assertions.assertThat(posts.get(4).getId()).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("글 수정")
+    void boardUpdateTest() {
+        Post post = Post.builder()
+                .title("제목 수정 전")
+                .content("내용 수정 전")
+                .build();
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("제목 수정 후")
+                .content("내용 수정 후")
+                .build();
+
+        postService.edit(post.getId(), postEdit);
+        Post postAfter = postService.findById(post.getId());
+        Assertions.assertThat(postAfter.getTitle()).isEqualTo("제목 수정 후");
+        Assertions.assertThat(postAfter.getContent()).isEqualTo("내용 수정 후");
     }
 }

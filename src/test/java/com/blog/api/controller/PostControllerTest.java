@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.blog.api.domain.Post;
 import com.blog.api.repository.PostRepository;
 import com.blog.api.request.PostCreate;
+import com.blog.api.request.PostEdit;
 import com.blog.api.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.stream.IntStream;
@@ -72,7 +73,7 @@ class PostControllerTest {
         // DB값 검증 로직
         String contentAsString = mvcResult.getResponse().getContentAsString();
         long postId = Long.parseLong(contentAsString);
-        Post post = postRepository.findById(postId);
+        Post post = postService.findById(postId);
         Assertions.assertThat(post.getTitle()).isEqualTo("제목입니다.");
         Assertions.assertThat(post.getContent()).isEqualTo("내용입니다.");
     }
@@ -114,5 +115,31 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.length()").value(10))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 수정")
+    void boardUpdateTest() throws Exception {
+        Post post = Post.builder()
+                .title("제목 수정 전")
+                .content("내용 수정 전")
+                .build();
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("제목 수정 후")
+                .content("내용 수정 후")
+                .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/posts/{postId}", post.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postEdit))
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+
+        Post postAfter = postService.findById(post.getId());
+        Assertions.assertThat(postAfter.getTitle()).isEqualTo("제목 수정 후");
+        Assertions.assertThat(postAfter.getContent()).isEqualTo("내용 수정 후");
     }
 }
