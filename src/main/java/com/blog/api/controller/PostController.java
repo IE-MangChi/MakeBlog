@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -45,5 +46,10 @@ public class PostController {
     @PatchMapping("/posts/{postId}")
     public void edit(@PathVariable("postId") Long postId, @RequestBody @Valid PostEdit postEdit) {
         postService.edit(postId, postEdit);
+    }
+
+    @DeleteMapping("/posts/{postId}")
+    public void delete(@PathVariable("postId") Long postId) {
+        postService.delete(postId);
     }
 }

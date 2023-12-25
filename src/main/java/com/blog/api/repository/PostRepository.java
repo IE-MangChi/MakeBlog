@@ -33,4 +33,8 @@ public class PostRepository {
         postMapper.update(postId, postEdit);
     }
 
+    public void delete(Long postId) {
+        postMapper.delete(postId);
+    }
+
 }

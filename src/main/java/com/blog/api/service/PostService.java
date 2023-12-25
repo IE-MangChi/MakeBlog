@@ -1,6 +1,7 @@
 package com.blog.api.service;
 
 import com.blog.api.domain.Page;
+import com.blog.api.exception.PostNotFound;
 import com.blog.api.request.PostCreate;
 import com.blog.api.domain.Post;
 import com.blog.api.repository.PostRepository;
@@ -24,7 +25,7 @@ public class PostService {
 
     public Post findById(Long postId) {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow(PostNotFound::new);
     }
 
     public List<Post> findAll(PostSearch postSearch) {
@@ -36,8 +37,14 @@ public class PostService {
     @Transactional
     public void edit(Long postId, PostEdit postEdit) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow(PostNotFound::new);
         postRepository.edit(post.getId(), postEdit);
+    }
+
+    public void delete(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(PostNotFound::new);
+        postRepository.delete(post.getId());
     }
 
 }

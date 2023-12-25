@@ -1,6 +1,7 @@
 package com.blog.api.service;
 
 import com.blog.api.domain.Post;
+import com.blog.api.exception.PostNotFound;
 import com.blog.api.repository.PostRepository;
 import com.blog.api.request.PostCreate;
 import com.blog.api.request.PostEdit;
@@ -85,5 +86,19 @@ class PostServiceTest {
         Post postAfter = postService.findById(post.getId());
         Assertions.assertThat(postAfter.getTitle()).isEqualTo("제목 수정 후");
         Assertions.assertThat(postAfter.getContent()).isEqualTo("내용 수정 후");
+    }
+
+    @Test
+    @DisplayName("글 수정")
+    void boardDeleteTest() {
+        Post post = Post.builder()
+                .title("제목 수정 전")
+                .content("내용 수정 전")
+                .build();
+        postRepository.save(post);
+
+        postService.delete(post.getId());
+        Assertions.assertThatThrownBy(() -> postService.findById(post.getId()))
+                .isInstanceOf(PostNotFound.class);
     }
 }

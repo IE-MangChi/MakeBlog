@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import com.blog.api.domain.Post;
+import com.blog.api.exception.PostNotFound;
 import com.blog.api.repository.PostRepository;
 import com.blog.api.request.PostCreate;
 import com.blog.api.request.PostEdit;
@@ -14,6 +15,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -21,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -141,5 +144,34 @@ class PostControllerTest {
         Post postAfter = postService.findById(post.getId());
         Assertions.assertThat(postAfter.getTitle()).isEqualTo("제목 수정 후");
         Assertions.assertThat(postAfter.getContent()).isEqualTo("내용 수정 후");
+    }
+
+    @Test
+    @DisplayName("글 삭제")
+    void boardDeleteTest() throws Exception {
+        Post post = Post.builder()
+                .title("제목 수정 전")
+                .content("내용 수정 전")
+                .build();
+        postRepository.save(post);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/posts/{postId}", post.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+
+        Assertions.assertThatThrownBy(() -> postService.findById(post.getId()))
+                .isInstanceOf(PostNotFound.class);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 글 조회")
+    void boardGetApiFailTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/posts/{postId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(print());
     }
 }

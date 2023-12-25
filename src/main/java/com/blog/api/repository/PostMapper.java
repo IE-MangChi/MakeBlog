@@ -16,4 +16,5 @@ public interface PostMapper {
                        @Param("boardSize") int boardSize);
     void update(@Param("id") Long postId,
                 @Param("postEdit") PostEdit postEdit);
+    void delete(Long postId);
 }

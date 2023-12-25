@@ -27,4 +27,8 @@
             content=#{postEdit.content}
             where id = #{id}
     </update>
+    <delete id="delete">
+        delete from Post
+        where id = #{id}
+    </delete>
 </mapper>
