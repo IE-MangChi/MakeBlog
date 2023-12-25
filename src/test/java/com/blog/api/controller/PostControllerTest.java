@@ -108,9 +108,10 @@ class PostControllerTest {
                     postRepository.save(post);
                 });
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts?pageNum=1")
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts?page=1&size=10")
                         .contentType(MediaType.APPLICATION_JSON)
                 )
+                .andExpect(jsonPath("$.length()").value(10))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }

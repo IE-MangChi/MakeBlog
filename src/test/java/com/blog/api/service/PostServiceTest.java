@@ -1,14 +1,11 @@
 package com.blog.api.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
 import com.blog.api.domain.Post;
 import com.blog.api.repository.PostRepository;
 import com.blog.api.request.PostCreate;
+import com.blog.api.request.PostSearch;
+import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -16,10 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -61,8 +55,12 @@ class PostServiceTest {
                     postRepository.save(post);
                 });
 
-        List<Post> posts = postService.findAll(1, 5);
-        System.out.println(posts.get(0).getTitle());
+        PostSearch postSearch = PostSearch.builder()
+                .page(1)
+                .size(5)
+                .build();
+
+        List<Post> posts = postService.findAll(postSearch);
         Assertions.assertThat(posts.size()).isEqualTo(5);
         Assertions.assertThat(posts.get(0).getId()).isEqualTo(1);
         Assertions.assertThat(posts.get(4).getId()).isEqualTo(5);
