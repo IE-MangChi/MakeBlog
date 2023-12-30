@@ -18,7 +18,10 @@ const title = ref("");
 const content = ref("");
 
 const write = function () {
-  axios.get("GETAPI요청");
+  axios.post("/api/posts", {
+    title: title.value,
+    content: content.value
+  })
 }
 </script>
 
