@@ -1,6 +1,14 @@
 <template>
-  <div>
+  <div class="mb-2">
     <el-input v-model="post.title"/>
+  </div>
+  <div class="sub d-flex">
+    <div class="category">
+      <el-input :value="category" />
+    </div>
+    <div class="regDate">
+      <el-input :value="regDate" readonly/>
+    </div>
   </div>
   <div class="mt-2">
     <el-input v-model="post.content" type="textarea" rows="15"></el-input>
@@ -39,6 +47,9 @@ const edit = () => {
         router.replace({name:"home"});
       })
 }
+
+const category = ref("카테고리");
+const regDate = ref("2023-12-31");
 </script>
 
 <style>
