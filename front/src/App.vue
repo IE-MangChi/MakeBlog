@@ -1,20 +1,16 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import { ArrowRight } from '@element-plus/icons-vue'
+import Header from "@/components/Header.vue";
+import Content from "@/components/Content.vue";
 </script>
 
 <template>
-
-  <div class="mb-2">
-    <el-breadcrumb :separator-icon="ArrowRight">
-      <el-breadcrumb-item :to="{ path: '/' }">홈 화면</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/write' }">글 작성</el-breadcrumb-item>
-    </el-breadcrumb>
-  </div>
-
-  <RouterView />
+  <Header />
+  <Content />
 </template>
 
 <style scoped>
-
+body {
+  margin: 0;
+  width: 100%;
+}
 </style>

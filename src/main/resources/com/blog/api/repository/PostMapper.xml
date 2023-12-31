@@ -18,7 +18,7 @@
     <select id="findAll" resultType="com.blog.api.domain.Post">
     select id, title, content
     from Post
-    order by id
+    order by id desc
     limit #{offset}, #{boardSize}
     </select>
     <update id="update">
