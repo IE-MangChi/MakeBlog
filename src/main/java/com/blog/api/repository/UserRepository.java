@@ -1,7 +1,6 @@
 package com.blog.api.repository;
 
 import com.blog.api.domain.Users;
-import com.blog.api.request.Login;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -14,6 +13,10 @@ public class UserRepository {
 
     public Optional<Users> findByEmailAndPassword(String email, String password) {
         return userMapper.findByEmailAndPassword(email, password);
+    }
+
+    public void save(Users users) {
+        userMapper.saveUser(users);
     }
 
 }

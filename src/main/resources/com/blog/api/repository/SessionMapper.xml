@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blog.api.repository.SessionMapper">
+    <insert id="saveSession" parameterType="com.blog.api.domain.Session">
+        INSERT INTO session (access_token, users_id)
+        VALUES (#{accessToken}, #{users.id})
+    </insert>
+    <select id="getSessions" resultType="com.blog.api.domain.Session">
+        select *
+        from session
+        where users_id = #{userId}
+    </select>
+</mapper>

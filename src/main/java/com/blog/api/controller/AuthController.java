@@ -1,9 +1,8 @@
 package com.blog.api.controller;
 
-import com.blog.api.domain.Users;
-import com.blog.api.exception.WrongSignIn;
-import com.blog.api.repository.UserRepository;
 import com.blog.api.request.Login;
+import com.blog.api.resonse.SessionResponse;
+import com.blog.api.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,14 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AuthController {
 
-    private final UserRepository userRepository;
+    private final AuthService authService;
 
     @PostMapping("/auth/login")
-    public Users login(@RequestBody @Valid Login login) throws Exception {
-        Users user = userRepository.findByEmailAndPassword(login.getEmail(),
-                login.getPassword()).orElseThrow(WrongSignIn::new);
-        return user;
+    public SessionResponse login(@RequestBody @Valid Login login) {
+        String accessToken = authService.signIn(login);
+        return new SessionResponse(accessToken);
     }
-
-
 }
