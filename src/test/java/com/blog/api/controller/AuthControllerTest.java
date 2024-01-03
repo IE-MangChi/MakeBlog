@@ -7,6 +7,7 @@ import com.blog.api.domain.Users;
 import com.blog.api.repository.SessionRepository;
 import com.blog.api.repository.UserRepository;
 import com.blog.api.request.Login;
+import com.blog.api.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,9 @@ class AuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private AuthService authService;
 
     @Autowired
     private SessionRepository sessionRepository;
@@ -86,6 +90,23 @@ class AuthControllerTest {
         int afterSessionCount = afterSessions.size();
         // Users에 Session갯수와 Session에 user_id인거 갯수가 동일하다로 테스트해야하나? 근데 테스트 복잡해지면 오염묻을거같은데
         Assertions.assertThat(afterSessionCount).isEqualTo(beforeSessionCount + 1);
+    }
+
+    @Test
+    @DisplayName("로그인 후 권한있는 페이지 접속")
+    void loginAndAuthedPage() throws Exception {
+        Login login = Login.builder()
+                .email("hsm9832@naver.com")
+                .password("1234")
+                .build();
+        String accessToken = authService.signIn(login);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/foo")
+                        .header("Authorization", accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
     }
 
 }

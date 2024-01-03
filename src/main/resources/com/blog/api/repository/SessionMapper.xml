@@ -11,4 +11,25 @@
         from session
         where users_id = #{userId}
     </select>
+    <select id="findByAccessToken" resultType="com.blog.api.domain.Session" resultMap="sessionResultMap">
+        SELECT s.*
+        FROM session s
+                 JOIN users u ON s.users_id = u.id
+        WHERE s.access_token = #{accessToken}
+    </select>
+
+    <resultMap id="sessionResultMap" type="com.blog.api.domain.Session">
+        <!-- session 엔터티 매핑 -->
+        <id property="id" column="id" />
+        <result property="accessToken" column="access_token" />
+
+        <!-- users 엔터티 매핑 -->
+        <association property="users" column="users_id" javaType="com.blog.api.domain.Users">
+            <id property="id" column="users_id" />
+            <result property="name" column="users_name" />
+            <result property="email" column="users_email" />
+            <result property="password" column="users_password" />
+            <result property="createdAt" column="users_created_at" />
+        </association>
+    </resultMap>
 </mapper>

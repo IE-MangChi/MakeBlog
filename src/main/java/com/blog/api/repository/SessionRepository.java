@@ -2,6 +2,7 @@ package com.blog.api.repository;
 
 import com.blog.api.domain.Session;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -17,5 +18,8 @@ public class SessionRepository {
 
     public List<Session> getSessions(Long userId) {
         return sessionMapper.getSessions(userId);
+    }
+    public Optional<Session> findByAccessToken(String accessToken) {
+        return sessionMapper.findByAccessToken(accessToken);
     }
 }
