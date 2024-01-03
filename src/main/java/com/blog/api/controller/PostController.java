@@ -36,7 +36,7 @@ public class PostController {
         return postService.write(postCreate);
     }
 
-    @PostMapping("/posts")
+    @PostMapping("/postAuth")
     public void postAuth(@RequestBody @Valid PostCreate postCreate, UserSession userSession) {
 //        return postService.write(postCreate, userSession.getId());
     }
