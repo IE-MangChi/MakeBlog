@@ -2,16 +2,12 @@ package com.blog.api.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-import com.blog.api.domain.Session;
 import com.blog.api.domain.Users;
-import com.blog.api.repository.SessionRepository;
 import com.blog.api.repository.UserRepository;
 import com.blog.api.request.Login;
-import com.blog.api.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
-import java.util.Optional;
-import org.assertj.core.api.Assertions;
+import com.jayway.jsonpath.JsonPath;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -28,12 +25,6 @@ class AuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private SessionRepository sessionRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -51,16 +42,17 @@ class AuthControllerTest {
 
         String json = objectMapper.writeValueAsString(login);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/loginJWT")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.accessToken").isNotEmpty())
                 .andDo(print());
     }
 
     @Test
-    @DisplayName("로그인 성공 후 세션 생성")
+    @DisplayName("로그인 성공 후 토큰 생성")
     void successLoginAndCreateSession() throws Exception {
         Users users = Users.builder()
                 .name("테스트")
@@ -69,9 +61,6 @@ class AuthControllerTest {
                 .build();
         userRepository.save(users);
 
-        List<Session> beforeSessions = sessionRepository.getSessions(users.getId());
-        int beforeSessionCount = beforeSessions.size();
-
         Login login = Login.builder()
                 .email("test9832@naver.com")
                 .password("1234")
@@ -79,17 +68,14 @@ class AuthControllerTest {
 
         String json = objectMapper.writeValueAsString(login);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/loginJWT")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.accessToken").isNotEmpty())
                 .andDo(print());
 
-        List<Session> afterSessions = sessionRepository.getSessions(users.getId());
-        int afterSessionCount = afterSessions.size();
-        // Users에 Session갯수와 Session에 user_id인거 갯수가 동일하다로 테스트해야하나? 근데 테스트 복잡해지면 오염묻을거같은데
-        Assertions.assertThat(afterSessionCount).isEqualTo(beforeSessionCount + 1);
     }
 
     @Test
@@ -99,10 +85,51 @@ class AuthControllerTest {
                 .email("hsm9832@naver.com")
                 .password("1234")
                 .build();
-        String accessToken = authService.signIn(login);
+
+        String json = objectMapper.writeValueAsString(login);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/auth/loginJWT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String responseBody = mvcResult.getResponse().getContentAsString();
+        String token = JsonPath.read(responseBody, "$.accessToken");
 
         mockMvc.perform(MockMvcRequestBuilders.get("/foo")
-                        .header("Authorization", accessToken)
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("로그인 후 토큰 만료 후 권한이 있는 페이지 접속 불가")
+    void loginAndAuthedPageFail() throws Exception {
+        Login login = Login.builder()
+                .email("hsm9832@naver.com")
+                .password("1234")
+                .build();
+
+        String json = objectMapper.writeValueAsString(login);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/auth/loginJWT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String responseBody = mvcResult.getResponse().getContentAsString();
+        String token = JsonPath.read(responseBody, "$.accessToken");
+
+        TimeUnit.SECONDS.sleep(601);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/foo")
+                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
