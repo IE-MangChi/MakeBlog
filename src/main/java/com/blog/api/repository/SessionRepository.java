@@ -22,4 +22,9 @@ public class SessionRepository {
     public Optional<Session> findByAccessToken(String accessToken) {
         return sessionMapper.findByAccessToken(accessToken);
     }
+
+    //테스트 데이터 초기화용
+    public void deleteAll() {
+        sessionMapper.deleteAll();
+    }
 }

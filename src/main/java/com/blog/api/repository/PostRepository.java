@@ -14,7 +14,8 @@ public class PostRepository {
     private final PostMapper postMapper;
 
     public Long save(Post post) {
-        return postMapper.save(post);
+        postMapper.save(post);
+        return post.getId();
     }
 
     public Optional<Post> findById(Long postId) {
@@ -35,6 +36,11 @@ public class PostRepository {
 
     public void delete(Long postId) {
         postMapper.delete(postId);
+    }
+
+    //테스트 데이터 초기화용
+    public void deleteAll() {
+        postMapper.deleteAll();
     }
 
 }

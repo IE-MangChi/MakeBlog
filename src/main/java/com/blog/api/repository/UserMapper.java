@@ -12,4 +12,6 @@ public interface UserMapper {
     Optional<Users> findByEmailAndPassword(@Param("email") String email,
                                            @Param("password") String password);
 
+    //테스트 데이터 초기화용
+    void deleteAll();
 }

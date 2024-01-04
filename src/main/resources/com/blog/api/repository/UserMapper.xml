@@ -11,4 +11,7 @@
         from users u
         where u.email = #{email} and u.password = #{password}
     </select>
+    <delete id="deleteAll">
+        delete from users
+    </delete>
 </mapper>

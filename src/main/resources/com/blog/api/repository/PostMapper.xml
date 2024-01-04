@@ -31,4 +31,7 @@
         delete from Post
         where id = #{id}
     </delete>
+    <delete id="deleteAll">
+        delete from Post
+    </delete>
 </mapper>

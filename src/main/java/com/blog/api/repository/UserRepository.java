@@ -19,4 +19,9 @@ public class UserRepository {
         userMapper.saveUser(users);
     }
 
+
+    // 테스트데이터 초기화용
+    public void deleteAll() {
+        userMapper.deleteAll();
+    }
 }

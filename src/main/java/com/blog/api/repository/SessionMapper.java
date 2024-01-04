@@ -13,4 +13,7 @@ public interface SessionMapper {
     void saveSession(Session session);
     List<Session> getSessions(@Param("userId") Long userId);
     Optional<Session> findByAccessToken(String accessToken);
+
+    // 테스트 데이터 초기화용
+    void deleteAll();
 }
