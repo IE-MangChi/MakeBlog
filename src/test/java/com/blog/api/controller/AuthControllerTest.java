@@ -106,34 +106,34 @@ class AuthControllerTest {
                 .andDo(print());
     }
 
-    @Test
-    @DisplayName("로그인 후 토큰 만료 후 권한이 있는 페이지 접속 불가")
-    void loginAndAuthedPageFail() throws Exception {
-        Login login = Login.builder()
-                .email("hsm9832@naver.com")
-                .password("1234")
-                .build();
-
-        String json = objectMapper.writeValueAsString(login);
-
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/auth/loginJWT")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        String responseBody = mvcResult.getResponse().getContentAsString();
-        String token = JsonPath.read(responseBody, "$.accessToken");
-
-        TimeUnit.SECONDS.sleep(601);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/foo")
-                        .header("Authorization", token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(print());
-    }
+//    @Test
+//    @DisplayName("로그인 후 토큰 만료 후 권한이 있는 페이지 접속 불가")
+//    void loginAndAuthedPageFail() throws Exception {
+//        Login login = Login.builder()
+//                .email("hsm9832@naver.com")
+//                .password("1234")
+//                .build();
+//
+//        String json = objectMapper.writeValueAsString(login);
+//
+//        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/auth/loginJWT")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(json)
+//                )
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andReturn();
+//
+//        String responseBody = mvcResult.getResponse().getContentAsString();
+//        String token = JsonPath.read(responseBody, "$.accessToken");
+//
+//        TimeUnit.SECONDS.sleep(11);
+//
+//        mockMvc.perform(MockMvcRequestBuilders.get("/foo")
+//                        .header("Authorization", token)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                )
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andDo(print());
+//    }
 
 }

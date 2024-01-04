@@ -69,8 +69,8 @@ class PostServiceTest {
 
         List<Post> posts = postService.findAll(postSearch);
         Assertions.assertThat(posts.size()).isEqualTo(5);
-        Assertions.assertThat(posts.get(0).getId()).isEqualTo(30);
-        Assertions.assertThat(posts.get(4).getId()).isEqualTo(26);
+        Assertions.assertThat(posts.get(0).getTitle()).isEqualTo("제목"+29);
+        Assertions.assertThat(posts.get(4).getTitle()).isEqualTo("제목"+25);
     }
 
     @Test
