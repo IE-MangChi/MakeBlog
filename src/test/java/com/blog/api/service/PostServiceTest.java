@@ -6,10 +6,10 @@ import com.blog.api.repository.PostRepository;
 import com.blog.api.request.PostCreate;
 import com.blog.api.request.PostEdit;
 import com.blog.api.request.PostSearch;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +29,11 @@ class PostServiceTest {
 
     @Autowired
     PostRepository postRepository;
+
+    @AfterEach
+    void clear() {
+        postRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("글 작성 테스트")
@@ -64,8 +69,8 @@ class PostServiceTest {
 
         List<Post> posts = postService.findAll(postSearch);
         Assertions.assertThat(posts.size()).isEqualTo(5);
-        Assertions.assertThat(posts.get(0).getId()).isEqualTo(1);
-        Assertions.assertThat(posts.get(4).getId()).isEqualTo(5);
+        Assertions.assertThat(posts.get(0).getId()).isEqualTo(30);
+        Assertions.assertThat(posts.get(4).getId()).isEqualTo(26);
     }
 
     @Test
