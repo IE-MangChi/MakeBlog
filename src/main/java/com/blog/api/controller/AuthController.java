@@ -9,6 +9,7 @@ import io.jsonwebtoken.Jwts;
 import jakarta.validation.Valid;
 import java.time.Duration;
 import java.util.Base64;
+import java.util.Date;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,8 @@ public class AuthController {
         String jws = Jwts.builder()
                 .subject(String.valueOf(userId))
                 .signWith(secretKey)
+                .issuedAt(new Date())
+                .expiration(jwtProvider.getExpiration())
                 .compact();
         return new SessionResponse(jws);
     }
