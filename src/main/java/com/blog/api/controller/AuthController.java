@@ -1,10 +1,15 @@
 package com.blog.api.controller;
 
+import com.blog.api.config.JwtProvider;
 import com.blog.api.config.data.UserSession;
 import com.blog.api.request.Login;
+import com.blog.api.resonse.SessionResponse;
 import com.blog.api.service.AuthService;
+import io.jsonwebtoken.Jwts;
 import jakarta.validation.Valid;
 import java.time.Duration;
+import java.util.Base64;
+import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AuthController {
 
+    private final JwtProvider jwtProvider;
     private final AuthService authService;
 
     @PostMapping("/auth/login")
@@ -35,5 +41,16 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .build();
+    }
+
+    @PostMapping("/auth/loginJWT")
+    public SessionResponse loginJWT(@RequestBody @Valid Login login) {
+        Long userId = authService.signInJwt(login);
+        SecretKey secretKey = jwtProvider.getSecretKey();
+        String jws = Jwts.builder()
+                .subject(String.valueOf(userId))
+                .signWith(secretKey)
+                .compact();
+        return new SessionResponse(jws);
     }
 }

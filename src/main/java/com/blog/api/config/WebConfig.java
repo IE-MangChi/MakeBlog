@@ -1,6 +1,7 @@
 package com.blog.api.config;
 
 import com.blog.api.config.interceptor.AuthInterceptor;
+import com.blog.api.config.resolver.AuthJWTResolver;
 import com.blog.api.config.resolver.AuthResolver;
 import com.blog.api.repository.SessionRepository;
 import java.util.List;
@@ -15,7 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-    private final SessionRepository sessionRepository;
+    private final JwtProvider jwtProvider;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -25,6 +26,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthResolver(sessionRepository));
+        resolvers.add(new AuthJWTResolver(jwtProvider));
     }
 }

@@ -32,4 +32,11 @@ public class AuthService {
         return newSession.getAccessToken();
     }
 
+    @Transactional
+    public Long signInJwt(Login login) {
+        Users users = userRepository.findByEmailAndPassword(login.getEmail(), login.getPassword())
+                .orElseThrow(WrongSignIn::new);
+        return users.getId();
+    }
+
 }
