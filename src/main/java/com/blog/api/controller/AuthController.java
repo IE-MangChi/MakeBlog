@@ -2,7 +2,9 @@ package com.blog.api.controller;
 
 import com.blog.api.config.JwtProvider;
 import com.blog.api.config.data.UserSession;
+import com.blog.api.domain.Users;
 import com.blog.api.request.Login;
+import com.blog.api.request.Signup;
 import com.blog.api.resonse.SessionResponse;
 import com.blog.api.service.AuthService;
 import io.jsonwebtoken.Jwts;
@@ -55,5 +57,15 @@ public class AuthController {
                 .expiration(jwtProvider.getExpiration())
                 .compact();
         return new SessionResponse(jws);
+    }
+
+    @PostMapping("/auth/signup")
+    public void signup(@RequestBody @Valid Signup signup) {
+        Users user = Users.builder()
+                .name(signup.getName())
+                .email(signup.getEmail())
+                .password(signup.getPassword())
+                .build();
+        authService.signup(user);
     }
 }

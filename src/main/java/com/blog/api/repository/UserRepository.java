@@ -15,6 +15,10 @@ public class UserRepository {
         return userMapper.findByEmailAndPassword(email, password);
     }
 
+    public Optional<Users> findByEmail(String email) {
+        return userMapper.findByEmail(email);
+    }
+
     public void save(Users users) {
         userMapper.saveUser(users);
     }

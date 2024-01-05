@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import com.blog.api.domain.Users;
 import com.blog.api.repository.UserRepository;
 import com.blog.api.request.Login;
+import com.blog.api.request.Signup;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import java.util.concurrent.TimeUnit;
@@ -135,5 +136,50 @@ class AuthControllerTest {
 //                .andExpect(MockMvcResultMatchers.status().isOk())
 //                .andDo(print());
 //    }
+
+    @Test
+    @DisplayName("회원가입 성공")
+    void successSignup() throws Exception {
+        Signup signup = Signup.builder()
+                .name("테스트")
+                .email("test@naver.com")
+                .password("1234")
+                .build();
+
+        String json = objectMapper.writeValueAsString(signup);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원가입 실패 - 이미 존재하는 이메일")
+    void failSignup() throws Exception {
+        Users users = Users.builder()
+                .name("테스트")
+                .email("test@naver.com")
+                .password("1234")
+                .build();
+        userRepository.save(users);
+
+        Signup signup = Signup.builder()
+                .name("테스트")
+                .email("test@naver.com")
+                .password("1234")
+                .build();
+
+        String json = objectMapper.writeValueAsString(signup);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andDo(print());
+    }
 
 }

@@ -11,6 +11,11 @@
         from users u
         where u.email = #{email} and u.password = #{password}
     </select>
+    <select id="findByEmail" resultType="com.blog.api.domain.Users">
+        select *
+        from users
+        where email = #{email}
+    </select>
     <delete id="deleteAll">
         delete from users
     </delete>
