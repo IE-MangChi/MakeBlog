@@ -61,11 +61,6 @@ public class AuthController {
 
     @PostMapping("/auth/signup")
     public void signup(@RequestBody @Valid Signup signup) {
-        Users user = Users.builder()
-                .name(signup.getName())
-                .email(signup.getEmail())
-                .password(signup.getPassword())
-                .build();
-        authService.signup(user);
+        authService.signup(signup);
     }
 }

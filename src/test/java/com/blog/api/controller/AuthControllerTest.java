@@ -6,21 +6,24 @@ import com.blog.api.domain.Users;
 import com.blog.api.repository.UserRepository;
 import com.blog.api.request.Login;
 import com.blog.api.request.Signup;
+import com.blog.api.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 @SpringBootTest
 class AuthControllerTest {
 
@@ -31,11 +34,26 @@ class AuthControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private ObjectMapper objectMapper;
+
+    @AfterEach
+    void clear() {
+        userRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("로그인 성공")
     void successLogin() throws Exception {
+        Users user = Users.builder()
+                .name("테스트")
+                .email("hsm9832@naver.com")
+                .password("1234")
+                .build();
+        userRepository.save(user);
+
         Login login = Login.builder()
                 .email("hsm9832@naver.com")
                 .password("1234")
@@ -53,14 +71,39 @@ class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("로그인 실패")
+    void failLogin() throws Exception {
+        Users user = Users.builder()
+                .name("테스트")
+                .email("hsm9832@naver.com")
+                .password("1234")
+                .build();
+        userRepository.save(user);
+
+        Login login = Login.builder()
+                .email("hsm9832@naver.com")
+                .password("4321")
+                .build();
+
+        String json = objectMapper.writeValueAsString(login);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/loginJWT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName("로그인 성공 후 토큰 생성")
     void successLoginAndCreateSession() throws Exception {
-        Users users = Users.builder()
+        Users user = Users.builder()
                 .name("테스트")
                 .email("test9832@naver.com")
                 .password("1234")
                 .build();
-        userRepository.save(users);
+        userRepository.save(user);
 
         Login login = Login.builder()
                 .email("test9832@naver.com")
@@ -82,6 +125,13 @@ class AuthControllerTest {
     @Test
     @DisplayName("로그인 후 권한있는 페이지 접속")
     void loginAndAuthedPage() throws Exception {
+        Users user = Users.builder()
+                .name("테스트")
+                .email("hsm9832@naver.com")
+                .password("1234")
+                .build();
+        userRepository.save(user);
+
         Login login = Login.builder()
                 .email("hsm9832@naver.com")
                 .password("1234")
@@ -159,12 +209,12 @@ class AuthControllerTest {
     @Test
     @DisplayName("회원가입 실패 - 이미 존재하는 이메일")
     void failSignup() throws Exception {
-        Users users = Users.builder()
+        Users user = Users.builder()
                 .name("테스트")
                 .email("test@naver.com")
                 .password("1234")
                 .build();
-        userRepository.save(users);
+        userRepository.save(user);
 
         Signup signup = Signup.builder()
                 .name("테스트")

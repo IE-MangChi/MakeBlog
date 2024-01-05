@@ -1,1 +1,0 @@
-insert into `users` (name, email, password) values ('성민', 'hsm9832@naver.com', '1234')

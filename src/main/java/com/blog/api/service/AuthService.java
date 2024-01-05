@@ -4,15 +4,13 @@ import com.blog.api.domain.Session;
 import com.blog.api.domain.Users;
 import com.blog.api.exception.WrongSignIn;
 import com.blog.api.exception.WrongSignup;
-import com.blog.api.repository.SessionMapper;
 import com.blog.api.repository.SessionRepository;
 import com.blog.api.repository.UserRepository;
 import com.blog.api.request.Login;
-import java.util.List;
+import com.blog.api.request.Signup;
+import com.blog.api.util.PasswordEncoder;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,14 +18,21 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
 
     @Transactional
     public String signIn(Login login) {
-        Users users = userRepository.findByEmailAndPassword(login.getEmail(), login.getPassword())
+        Users users = userRepository.findByEmail(login.getEmail())
                 .orElseThrow(WrongSignIn::new);
         // 성공 로직
+        Boolean matches = passwordEncoder.isMatches(login.getPassword(), users.getPassword());
+
+        if (!matches) {
+            throw new WrongSignIn();
+        }
+
         Session newSession = Session.builder()
                 .users(users)
                 .build();
@@ -37,19 +42,34 @@ public class AuthService {
 
     @Transactional
     public Long signInJwt(Login login) {
-        Users users = userRepository.findByEmailAndPassword(login.getEmail(), login.getPassword())
+        Users users = userRepository.findByEmail(login.getEmail())
                 .orElseThrow(WrongSignIn::new);
+
+        Boolean matches = passwordEncoder.isMatches(login.getPassword(), users.getPassword());
+
+        if (!matches) {
+            throw new WrongSignIn();
+        }
+
         return users.getId();
     }
 
     @Transactional
-    public void signup(Users users) {
-        Optional<Users> findUser = userRepository.findByEmail(users.getEmail());
+    public void signup(Signup signup) {
+        Optional<Users> findUser = userRepository.findByEmail(signup.getEmail());
         if (findUser.isPresent()) {
             throw new WrongSignup();
         }
 
-        userRepository.save(users);
+        String encodePassword = passwordEncoder.getEncodePassword(signup.getPassword());
+
+        Users user = Users.builder()
+                .name(signup.getName())
+                .email(signup.getEmail())
+                .password(encodePassword)
+                .build();
+
+        userRepository.save(user);
     }
 
 }
