@@ -1,6 +1,5 @@
 package com.blog.api.controller;
 
-import com.blog.api.config.data.UserSession;
 import com.blog.api.domain.Post;
 import com.blog.api.request.PostCreate;
 import com.blog.api.request.PostEdit;
@@ -26,19 +25,9 @@ public class PostController {
 
     private final PostService postService;
 
-    @GetMapping("/foo")
-    public Long foo(UserSession userSession) {
-        return userSession.getId();
-    }
-
     @PostMapping("/posts")
     public Long post(@RequestBody @Valid PostCreate postCreate) {
         return postService.write(postCreate);
-    }
-
-    @PostMapping("/postAuth")
-    public void postAuth(@RequestBody @Valid PostCreate postCreate, UserSession userSession) {
-//        return postService.write(postCreate, userSession.getId());
     }
 
     @GetMapping("/posts/{postId}")

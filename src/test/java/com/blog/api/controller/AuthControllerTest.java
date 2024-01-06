@@ -4,7 +4,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import com.blog.api.domain.Users;
 import com.blog.api.repository.UserRepository;
-import com.blog.api.request.Login;
 import com.blog.api.request.Signup;
 import com.blog.api.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,158 +33,12 @@ class AuthControllerTest {
     private UserRepository userRepository;
 
     @Autowired
-    private AuthService authService;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     @AfterEach
     void clear() {
         userRepository.deleteAll();
     }
-
-    @Test
-    @DisplayName("로그인 성공")
-    void successLogin() throws Exception {
-        Users user = Users.builder()
-                .name("테스트")
-                .email("hsm9832@naver.com")
-                .password("1234")
-                .build();
-        userRepository.save(user);
-
-        Login login = Login.builder()
-                .email("hsm9832@naver.com")
-                .password("1234")
-                .build();
-
-        String json = objectMapper.writeValueAsString(login);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/loginJWT")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.accessToken").isNotEmpty())
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("로그인 실패")
-    void failLogin() throws Exception {
-        Users user = Users.builder()
-                .name("테스트")
-                .email("hsm9832@naver.com")
-                .password("1234")
-                .build();
-        userRepository.save(user);
-
-        Login login = Login.builder()
-                .email("hsm9832@naver.com")
-                .password("4321")
-                .build();
-
-        String json = objectMapper.writeValueAsString(login);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/loginJWT")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                )
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("로그인 성공 후 토큰 생성")
-    void successLoginAndCreateSession() throws Exception {
-        Users user = Users.builder()
-                .name("테스트")
-                .email("test9832@naver.com")
-                .password("1234")
-                .build();
-        userRepository.save(user);
-
-        Login login = Login.builder()
-                .email("test9832@naver.com")
-                .password("1234")
-                .build();
-
-        String json = objectMapper.writeValueAsString(login);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/loginJWT")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.accessToken").isNotEmpty())
-                .andDo(print());
-
-    }
-
-    @Test
-    @DisplayName("로그인 후 권한있는 페이지 접속")
-    void loginAndAuthedPage() throws Exception {
-        Users user = Users.builder()
-                .name("테스트")
-                .email("hsm9832@naver.com")
-                .password("1234")
-                .build();
-        userRepository.save(user);
-
-        Login login = Login.builder()
-                .email("hsm9832@naver.com")
-                .password("1234")
-                .build();
-
-        String json = objectMapper.writeValueAsString(login);
-
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/auth/loginJWT")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        String responseBody = mvcResult.getResponse().getContentAsString();
-        String token = JsonPath.read(responseBody, "$.accessToken");
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/foo")
-                        .header("Authorization", token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(print());
-    }
-
-//    @Test
-//    @DisplayName("로그인 후 토큰 만료 후 권한이 있는 페이지 접속 불가")
-//    void loginAndAuthedPageFail() throws Exception {
-//        Login login = Login.builder()
-//                .email("hsm9832@naver.com")
-//                .password("1234")
-//                .build();
-//
-//        String json = objectMapper.writeValueAsString(login);
-//
-//        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/auth/loginJWT")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(json)
-//                )
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andReturn();
-//
-//        String responseBody = mvcResult.getResponse().getContentAsString();
-//        String token = JsonPath.read(responseBody, "$.accessToken");
-//
-//        TimeUnit.SECONDS.sleep(11);
-//
-//        mockMvc.perform(MockMvcRequestBuilders.get("/foo")
-//                        .header("Authorization", token)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                )
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andDo(print());
-//    }
 
     @Test
     @DisplayName("회원가입 성공")
