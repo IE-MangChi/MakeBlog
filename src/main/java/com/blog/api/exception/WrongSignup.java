@@ -2,7 +2,7 @@ package com.blog.api.exception;
 
 public class WrongSignup extends BlogException {
 
-    private static final String MESSAGE = "로그인에 실패하였습니다.";
+    private static final String MESSAGE = "회원가입에 실패하였습니다.";
 
     public WrongSignup() {
         super(MESSAGE);

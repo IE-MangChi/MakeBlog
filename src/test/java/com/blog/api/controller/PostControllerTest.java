@@ -16,9 +16,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -47,6 +49,7 @@ class PostControllerTest {
 
     // 이런 테스트는 Get요청에 맞는듯
     @Test
+    @WithMockUser(username = "hsm9832@naver.com", roles = {"ADMIN"})
     @DisplayName("/posts 요청시 title값은 필수다")
     void postEmptyTitleTest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
@@ -61,6 +64,7 @@ class PostControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "hsm9832@naver.com", roles = {"ADMIN"})
     @DisplayName("/posts 요청시 DB에 값이 저장")
     void postResultOnDBTest() throws Exception {
         PostCreate request = PostCreate.builder()
@@ -125,6 +129,7 @@ class PostControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "hsm9832@naver.com", roles = {"ADMIN"})
     @DisplayName("글 수정")
     void boardUpdateTest() throws Exception {
         Post post = Post.builder()
@@ -151,6 +156,7 @@ class PostControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "hsm9832@naver.com", roles = {"ADMIN"})
     @DisplayName("글 삭제")
     void boardDeleteTest() throws Exception {
         Post post = Post.builder()
@@ -170,6 +176,7 @@ class PostControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "hsm9832@naver.com", roles = {"ADMIN"})
     @DisplayName("존재하지 않는 글 조회")
     void boardGetApiFailTest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/posts/{postId}", 1L)

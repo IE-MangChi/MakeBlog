@@ -4,9 +4,9 @@ import com.blog.api.domain.Users;
 import com.blog.api.exception.WrongSignup;
 import com.blog.api.repository.UserRepository;
 import com.blog.api.request.Signup;
-import com.blog.api.util.PasswordEncoder;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +24,7 @@ public class AuthService {
             throw new WrongSignup();
         }
 
-        String encodePassword = passwordEncoder.getEncodePassword(signup.getPassword());
+        String encodePassword = passwordEncoder.encode(signup.getPassword());
 
         Users user = Users.builder()
                 .name(signup.getName())
