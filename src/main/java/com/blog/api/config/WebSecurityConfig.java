@@ -30,7 +30,6 @@ import org.springframework.session.security.web.authentication.SpringSessionReme
 @Configuration
 @EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
-@EnableMethodSecurity
 public class WebSecurityConfig {
 
     private final ObjectMapper objectMapper;

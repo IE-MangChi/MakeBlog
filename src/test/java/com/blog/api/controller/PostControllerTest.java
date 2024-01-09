@@ -179,7 +179,7 @@ class PostControllerTest {
     @WithMockUser(username = "hsm9832@naver.com", roles = {"ADMIN"})
     @DisplayName("존재하지 않는 글 조회")
     void boardGetApiFailTest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/posts/{postId}", 1L)
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/{postId}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(MockMvcResultMatchers.status().isNotFound())

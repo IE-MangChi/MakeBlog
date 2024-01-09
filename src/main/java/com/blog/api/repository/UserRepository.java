@@ -11,6 +11,10 @@ public class UserRepository {
 
     private final UserMapper userMapper;
 
+    public Optional<Users> findById(Long userId) {
+        return userMapper.findById(userId);
+    }
+
     public Optional<Users> findByEmailAndPassword(String email, String password) {
         return userMapper.findByEmailAndPassword(email, password);
     }

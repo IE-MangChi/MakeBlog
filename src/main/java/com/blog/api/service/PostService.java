@@ -1,7 +1,10 @@
 package com.blog.api.service;
 
 import com.blog.api.domain.Page;
+import com.blog.api.domain.Users;
 import com.blog.api.exception.PostNotFound;
+import com.blog.api.exception.UserNotFound;
+import com.blog.api.repository.UserRepository;
 import com.blog.api.request.PostCreate;
 import com.blog.api.domain.Post;
 import com.blog.api.repository.PostRepository;
@@ -16,10 +19,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PostService {
 
+    private final UserRepository userRepository;
     private final PostRepository postRepository;
 
-    public Long write(PostCreate postCreate) {
-        Post post = new Post(postCreate.getTitle(), postCreate.getContent());
+    public Long write(Long userId, PostCreate postCreate) {
+        Users users = userRepository.findById(userId)
+                .orElseThrow(UserNotFound::new);
+
+        Post post = Post.builder()
+                .users(users)
+                .title(postCreate.getTitle())
+                .content(postCreate.getContent())
+                .build();
         return postRepository.save(post);
     }
 

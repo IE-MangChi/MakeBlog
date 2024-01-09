@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper {
 
     void saveUser(Users users);
+    Optional<Users> findById(Long userId);
     Optional<Users> findByEmailAndPassword(@Param("email") String email,
                                            @Param("password") String password);
     Optional<Users> findByEmail(String email);

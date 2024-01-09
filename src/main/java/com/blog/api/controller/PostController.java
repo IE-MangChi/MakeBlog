@@ -1,5 +1,6 @@
 package com.blog.api.controller;
 
+import com.blog.api.config.UserPrincipal;
 import com.blog.api.domain.Post;
 import com.blog.api.request.PostCreate;
 import com.blog.api.request.PostEdit;
@@ -10,6 +11,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -28,8 +30,8 @@ public class PostController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/posts")
-    public Long post(@RequestBody @Valid PostCreate postCreate) {
-        return postService.write(postCreate);
+    public Long post(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody @Valid PostCreate postCreate) {
+        return postService.write(userPrincipal.getUserId(), postCreate);
     }
 
     @GetMapping("/posts/{postId}")
@@ -43,13 +45,13 @@ public class PostController {
         return postService.findAll(postSearch);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') && hasPermission(#postId, 'POST', 'DELETE')")
     @PatchMapping("/posts/{postId}")
     public void edit(@PathVariable("postId") Long postId, @RequestBody @Valid PostEdit postEdit) {
         postService.edit(postId, postEdit);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') && hasPermission(#postId, 'POST', 'DELETE')")
     @DeleteMapping("/posts/{postId}")
     public void delete(@PathVariable("postId") Long postId) {
         postService.delete(postId);

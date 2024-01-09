@@ -6,6 +6,11 @@
         insert into users (name, email, password, created_at)
         values (#{name}, #{email}, #{password}, #{createdAt})
     </insert>
+    <select id="findById" resultType="com.blog.api.domain.Users">
+        select *
+        from Users
+        where id = #{userId}
+    </select>
     <select id="findByEmailAndPassword" resultType="com.blog.api.domain.Users">
         select *
         from users u

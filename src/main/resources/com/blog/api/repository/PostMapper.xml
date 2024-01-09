@@ -2,12 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.blog.api.repository.PostMapper">
+    <resultMap id="postResultMap" type="com.blog.api.domain.Post">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <association property="users" javaType="com.blog.api.domain.Users">
+            <id property="id" column="users_id"/>
+        </association>
+    </resultMap>
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        insert into Post (title, content)
-        values (#{title}, #{content})
+        insert into Post (title, content, users_id)
+        values (#{title}, #{content}, #{users.id})
     </insert>
     <select id="findById" resultType="com.blog.api.domain.Post">
-        select id, title, content
+        select *
         from Post
         where id = #{id}
     </select>
