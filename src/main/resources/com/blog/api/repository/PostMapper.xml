@@ -8,16 +8,21 @@
         <result property="content" column="content"/>
         <association property="users" javaType="com.blog.api.domain.Users">
             <id property="id" column="users_id"/>
+            <result property="name" column="users_name"/>
+            <result property="email" column="users_email"/>
+            <result property="password" column="users_password"/>
+            <result property="createdAt" column="users_created_at"/>
         </association>
     </resultMap>
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
         insert into Post (title, content, users_id)
         values (#{title}, #{content}, #{users.id})
     </insert>
-    <select id="findById" resultType="com.blog.api.domain.Post">
-        select *
-        from Post
-        where id = #{id}
+    <select id="findById" resultMap="postResultMap">
+        select p.*, u.id as users_id, u.name as users_name, u.email as users_email, u.password as users_password, u.created_at as users_created_at
+        from Post p
+                 join Users u on p.users_id = u.id
+        where p.id = #{id}
     </select>
     <select id="count" resultType="int">
         select count(*)

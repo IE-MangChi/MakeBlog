@@ -1,8 +1,10 @@
 package com.blog.api.service;
 
 import com.blog.api.domain.Post;
+import com.blog.api.domain.Users;
 import com.blog.api.exception.PostNotFound;
 import com.blog.api.repository.PostRepository;
+import com.blog.api.repository.UserRepository;
 import com.blog.api.request.PostCreate;
 import com.blog.api.request.PostEdit;
 import com.blog.api.request.PostSearch;
@@ -28,6 +30,9 @@ class PostServiceTest {
     PostService postService;
 
     @Autowired
+    UserRepository userRepository;
+
+    @Autowired
     PostRepository postRepository;
 
     @AfterEach
@@ -38,16 +43,24 @@ class PostServiceTest {
     @Test
     @DisplayName("글 작성 테스트")
     void boardPostTest() {
-        PostCreate postCreate = PostCreate.builder()
-                .title("제목")
-                .content("내용")
+        Users users = Users.builder()
+                .name("테스트")
+                .email("test")
+                .password("1234")
                 .build();
 
-        Long postId = postService.write(postCreate);
+        userRepository.save(users);
 
-        Post post = postService.findById(postId);
-        Assertions.assertThat(post.getTitle()).isEqualTo("제목");
-        Assertions.assertThat(post.getContent()).isEqualTo("내용");
+        PostCreate post = PostCreate.builder()
+                .title("제목1")
+                .content("내용1")
+                .build();
+
+        Long postId = postService.write(users.getId(), post);
+
+        Post findPost = postRepository.findById(postId).get();
+        Assertions.assertThat(findPost.getTitle()).isEqualTo("제목1");
+        Assertions.assertThat(findPost.getContent()).isEqualTo("내용1");
     }
 
     @Test

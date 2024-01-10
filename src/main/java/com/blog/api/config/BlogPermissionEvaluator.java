@@ -25,8 +25,6 @@ public class BlogPermissionEvaluator implements PermissionEvaluator {
                                  Object permission) {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
 
-        log.info("targetId = {}" ,targetId);
-
         Post post = postRepository.findById((Long) targetId)
                 .orElseThrow(PostNotFound::new);
 
@@ -35,6 +33,6 @@ public class BlogPermissionEvaluator implements PermissionEvaluator {
             return false;
         }
 
-        return false;
+        return true;
     }
 }

@@ -45,7 +45,7 @@ public class PostController {
         return postService.findAll(postSearch);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') && hasPermission(#postId, 'POST', 'DELETE')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') && hasPermission(#postId, 'POST', 'UPDATE')")
     @PatchMapping("/posts/{postId}")
     public void edit(@PathVariable("postId") Long postId, @RequestBody @Valid PostEdit postEdit) {
         postService.edit(postId, postEdit);
@@ -53,7 +53,7 @@ public class PostController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') && hasPermission(#postId, 'POST', 'DELETE')")
     @DeleteMapping("/posts/{postId}")
-    public void delete(@PathVariable("postId") Long postId) {
+    public void delete(@PathVariable Long postId) {
         postService.delete(postId);
     }
 }
